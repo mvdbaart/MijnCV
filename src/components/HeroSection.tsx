@@ -24,7 +24,7 @@ const HeroSection = ({
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
   return (
-    <section className="relative flex h-screen w-full items-center justify-center bg-gradient-to-b from-white to-gray-100 px-4 dark:from-gray-900 dark:to-gray-800">
+    <section className="relative flex h-screen w-full items-center justify-center bg-gradient-to-b from-white to-gray-100 px-4 pt-16 dark:from-gray-900 dark:to-gray-800">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:14px_24px]"></div>
       </div>
@@ -36,9 +36,12 @@ const HeroSection = ({
         >
           <h1 className="mb-4 text-6xl font-bold text-gray-900 dark:text-white md:text-7xl">
             {name}
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+            <Avatar className="mx-auto mt-8 h-48 w-48">
+              <AvatarImage
+                src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
+                className="object-cover"
+              />
+              <AvatarFallback>MB</AvatarFallback>
             </Avatar>
           </h1>
           <h2 className="mb-6 text-2xl font-medium text-gray-600 dark:text-gray-300 md:text-3xl">

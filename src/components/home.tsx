@@ -56,9 +56,8 @@ const Home = ({
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Navbar />
-
       <main className="relative">
-        <div id="hero">
+        <div id="hero" className="relative">
           <HeroSection
             name={name}
             title={title}
