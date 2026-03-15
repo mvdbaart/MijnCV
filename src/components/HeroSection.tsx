@@ -153,7 +153,7 @@ const HeroSection = ({
         style={{ opacity: contentOpacity, y: contentY }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900/70 px-8 lg:w-1/2 lg:bg-gray-900"
+        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-transparent px-8 lg:w-1/2 lg:bg-gray-900"
       >
         {/* decorative rotating border frames */}
         {DECO_FRAMES.map((f, i) => (
@@ -330,17 +330,6 @@ const HeroSection = ({
         </div>
       </div>
 
-      {/* ── MOBILE — frame strip ───────────────────────────── */}
-      <div className="absolute inset-0 overflow-hidden lg:hidden">
-        <img
-          src={currentFrameSrc}
-          alt=""
-          className="h-full w-full object-cover object-center opacity-45"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gray-900/35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/40 via-gray-900/25 to-gray-900" />
-      </div>
     </section>
   );
 };

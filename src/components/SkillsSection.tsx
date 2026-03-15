@@ -74,7 +74,7 @@ function ProficiencyDots({ level }: { level: number }) {
 
 const SkillsSection = () => {
   return (
-    <section id="skills" className="bg-gray-900 px-6 py-24 md:px-12">
+    <section id="skills" className="bg-gray-900/80 px-6 py-24 md:px-12 lg:bg-gray-900">
       <div className="mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
