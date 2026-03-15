@@ -1,9 +1,15 @@
-import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const TOTAL_FRAMES = 51;
+const FRAMES = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
+  const n = String(i * 2 + 1).padStart(3, "0");
+  return `/frames_hero/frame_${n}.webp`;
+});
 
 interface HeroSectionProps {
   name?: string;
@@ -23,17 +29,28 @@ const HeroSection = ({
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 800], [0, -120]);
-  const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
+  const [frameIndex, setFrameIndex] = useState(0);
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const progress = Math.min(1, Math.max(0, y / 600));
+    setFrameIndex(Math.round(progress * (TOTAL_FRAMES - 1)));
+  });
+
+  useEffect(() => {
+    FRAMES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
+    <section className="relative flex h-screen w-full flex-row overflow-hidden pt-16">
       {/* ── LEFT PANEL — profile content ───────────────────── */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex w-full items-center justify-center bg-gray-900 px-8 lg:w-1/2"
+        className="relative z-10 flex w-1/2 flex-none items-center bg-gray-900 px-4 md:px-8"
       >
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
@@ -42,9 +59,9 @@ const HeroSection = ({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative z-10 max-w-lg text-center"
+          className="relative z-10 w-full text-left"
         >
-          <Avatar className="mx-auto mb-6 h-36 w-36 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900">
+          <Avatar className="mb-4 h-20 w-20 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900 md:mb-6 md:h-36 md:w-36">
             <AvatarImage
               src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
               className="object-cover"
@@ -58,7 +75,7 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="mb-2 text-4xl font-bold tracking-tight text-white md:text-5xl"
+            className="mb-2 text-2xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl"
           >
             {name}
           </motion.h1>
@@ -67,7 +84,7 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="mb-5 text-lg font-medium tracking-widest text-amber-400/80 uppercase"
+            className="mb-4 text-xs font-medium tracking-widest text-amber-400/80 uppercase md:mb-5 md:text-lg"
           >
             {title}
           </motion.h2>
@@ -76,7 +93,7 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className="mb-8 text-base leading-relaxed text-gray-400 md:text-lg"
+            className="mb-6 hidden text-sm leading-relaxed text-gray-400 md:mb-8 md:block md:text-base lg:text-lg"
           >
             {summary}
           </motion.p>
@@ -85,44 +102,44 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="flex flex-wrap justify-center gap-3"
+            className="flex flex-wrap gap-2 md:gap-3"
           >
             <Button
               variant="outline"
-              size="lg"
+              size="sm"
               className={cn(
-                "gap-2 border-white/20 bg-transparent text-white",
+                "gap-1.5 border-white/20 bg-transparent text-white",
                 "hover:border-white/40 hover:bg-white/10 hover:text-white",
               )}
               asChild
             >
               <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                <Github className="h-4 w-4" />
-                GitHub
+                <Github className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">GitHub</span>
               </a>
             </Button>
             <Button
               variant="outline"
-              size="lg"
+              size="sm"
               className={cn(
-                "gap-2 border-white/20 bg-transparent text-white",
+                "gap-1.5 border-white/20 bg-transparent text-white",
                 "hover:border-white/40 hover:bg-white/10 hover:text-white",
               )}
               asChild
             >
               <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
+                <Linkedin className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">LinkedIn</span>
               </a>
             </Button>
             <Button
-              size="lg"
-              className="gap-2 bg-amber-500 text-gray-900 hover:bg-amber-400"
+              size="sm"
+              className="gap-1.5 bg-amber-500 text-gray-900 hover:bg-amber-400"
               asChild
             >
               <a href={email}>
-                <Mail className="h-4 w-4" />
-                Contact
+                <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Contact</span>
               </a>
             </Button>
           </motion.div>
@@ -138,34 +155,18 @@ const HeroSection = ({
         </motion.div>
       </motion.div>
 
-      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
-      <div className="hidden overflow-hidden lg:block lg:w-1/2">
-        <motion.img
-
-          src="/output_optimized.gif"
+      {/* ── RIGHT PANEL — scroll-driven frames ─────────────── */}
+      <div className="relative w-1/2 flex-none overflow-hidden">
+        <img
+          src={FRAMES[frameIndex]}
           alt=""
-          style={{ y: bgY, scale: bgScale }}
           className="h-full w-full object-cover object-center"
           aria-hidden="true"
         />
         {/* left-edge fade into dark panel */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-900 to-transparent" />
-          {/* bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
-        </div>
-      </div>
-
-
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
-        <img
-          src="/output_optimized.gif"
-          alt=""
-          className="h-full w-full object-cover object-top opacity-30"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-gray-900 to-transparent md:w-32" />
+        {/* bottom fade */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
       </div>
     </section>
   );
