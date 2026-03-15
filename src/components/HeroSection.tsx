@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
@@ -21,6 +26,12 @@ const ROLES = [
   "AI Developer",
   "Probleemoplosser",
 ];
+
+const HERO_FRAME_COUNT = 51;
+const HERO_FRAMES = Array.from({ length: HERO_FRAME_COUNT }, (_, index) => {
+  const frameNumber = String(index * 2 + 1).padStart(3, "0");
+  return `/frames_hero/frame_${frameNumber}.webp`;
+});
 
 function useTypewriter(words: string[]) {
   const [idx, setIdx] = useState(0);
@@ -63,11 +74,19 @@ const HeroSection = ({
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
+  const heroRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
   const bgY = useTransform(scrollY, [0, 800], [0, -120]);
   const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  const rafIdRef = useRef<number | null>(null);
+  const pendingProgressRef = useRef(0);
 
   // #1 — typewriter
   const role = useTypewriter(ROLES);
@@ -82,8 +101,65 @@ const HeroSection = ({
   };
   const handleMouseLeave = () => setMouse({ x: -9999, y: -9999 });
 
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    pendingProgressRef.current = progress;
+
+    if (rafIdRef.current !== null) {
+      return;
+    }
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      const clampedProgress = Math.min(Math.max(pendingProgressRef.current, 0), 1);
+      const nextFrame = Math.floor(clampedProgress * (HERO_FRAME_COUNT - 1));
+      setCurrentFrameIndex((prevFrame) =>
+        prevFrame === nextFrame ? prevFrame : nextFrame,
+      );
+      rafIdRef.current = null;
+    });
+  });
+
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    const shouldPreloadAllFrames =
+      !connection?.saveData && connection?.effectiveType !== "2g";
+
+    const priorityFrames = [
+      HERO_FRAMES[0],
+      HERO_FRAMES[Math.floor((HERO_FRAME_COUNT - 1) / 2)],
+      HERO_FRAMES[HERO_FRAME_COUNT - 1],
+    ];
+    const framesToPreload = shouldPreloadAllFrames ? HERO_FRAMES : priorityFrames;
+
+    const preloadedImages = framesToPreload.map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img;
+    });
+
+    return () => {
+      preloadedImages.forEach((img) => {
+        img.src = "";
+      });
+    };
+  }, []);
+
+  const currentFrameSrc = HERO_FRAMES[currentFrameIndex];
+
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
+    <section
+      ref={heroRef}
+      className="relative flex h-screen w-full overflow-hidden pt-16"
+    >
       {/* ── LEFT PANEL ───────────────────────────────────── */}
       <motion.div
         ref={panelRef}
@@ -239,11 +315,12 @@ const HeroSection = ({
       {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
       <div className="hidden overflow-hidden lg:block lg:w-1/2">
         <motion.img
-          src="/output_optimized.gif"
+          src={currentFrameSrc}
           alt=""
           style={{ y: bgY, scale: bgScale }}
           className="h-full w-full object-cover object-center"
           aria-hidden="true"
+          loading="eager"
         />
         {/* left-edge fade into dark panel */}
         <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
@@ -256,10 +333,11 @@ const HeroSection = ({
       {/* ── MOBILE — GIF strip ─────────────────────────────── */}
       <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
         <img
-          src="/output_optimized.gif"
+          src={currentFrameSrc}
           alt=""
           className="h-full w-full object-cover object-top opacity-30"
           aria-hidden="true"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
       </div>
