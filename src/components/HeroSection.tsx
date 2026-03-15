@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+} from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TOTAL_FRAMES = 51;
@@ -12,6 +18,14 @@ const FRAMES = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
 });
 
 const VH = typeof window !== "undefined" ? window.innerHeight : 800;
+
+const ROLES = [
+  "ICT Professional",
+  "VoIP Engineer",
+  "AI Developer",
+  "Servicedesk Expert",
+  "Procesverbeteraar",
+];
 
 interface HeroSectionProps {
   name?: string;
@@ -34,6 +48,7 @@ const HeroSection = ({
   const contentOpacity = useTransform(scrollY, [0, VH * 0.6], [1, 0]);
   const contentY = useTransform(scrollY, [0, VH * 0.6], [0, -60]);
   const [frameIndex, setFrameIndex] = useState(0);
+  const [roleIndex, setRoleIndex] = useState(0);
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const progress = Math.min(1, Math.max(0, y / VH));
@@ -45,6 +60,15 @@ const HeroSection = ({
       const img = new Image();
       img.src = src;
     });
+  }, []);
+
+  // Cycle through roles every 2.5s
+  useEffect(() => {
+    const id = setInterval(
+      () => setRoleIndex((i) => (i + 1) % ROLES.length),
+      2500,
+    );
+    return () => clearInterval(id);
   }, []);
 
   return (
@@ -67,6 +91,17 @@ const HeroSection = ({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="relative z-10 w-full text-left"
           >
+            {/* ── Beschikbaarheidsbadge ── */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-400/10 px-3 py-1 text-xs text-green-400"
+            >
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400" />
+              Beschikbaar voor nieuwe uitdagingen
+            </motion.div>
+
             <Avatar className="mb-4 h-20 w-20 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900 md:mb-6 md:h-36 md:w-36">
               <AvatarImage
                 src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
@@ -86,14 +121,26 @@ const HeroSection = ({
               {name}
             </motion.h1>
 
-            <motion.h2
+            {/* ── Typewriter role ── */}
+            <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="mb-4 text-xs font-medium tracking-widest text-amber-400/80 uppercase md:mb-5 md:text-lg"
+              className="mb-4 h-7 overflow-hidden md:mb-5 md:h-8"
             >
-              {title}
-            </motion.h2>
+              <AnimatePresence mode="wait">
+                <motion.h2
+                  key={roleIndex}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="text-xs font-medium tracking-widest text-amber-400/80 uppercase md:text-lg"
+                >
+                  {ROLES[roleIndex]}
+                </motion.h2>
+              </AnimatePresence>
+            </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -146,6 +193,20 @@ const HeroSection = ({
                 <a href={email}>
                   <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
                   <span className="hidden sm:inline">Contact</span>
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1.5 border-amber-400/40 bg-amber-400/10 text-amber-300",
+                  "hover:border-amber-400/60 hover:bg-amber-400/20 hover:text-amber-200",
+                )}
+                asChild
+              >
+                <a href="/cv-maarten-van-den-baart.pdf" download>
+                  <Download className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">Download CV</span>
                 </a>
               </Button>
             </motion.div>

@@ -8,6 +8,7 @@ interface Project {
   id: number;
   title: string;
   description: string;
+  detail?: string;
   imageUrl: string;
   tags: string[];
   githubUrl: string;
@@ -25,6 +26,8 @@ const defaultProjects: Project[] = [
     title: "3CX Callflow met AFAS integratie",
     description:
       "Callflow met een API-integratie met AFAS om specifieke klanten toegang te geven tot ondersteuning buiten kantooruren.",
+    detail:
+      "Technische uitdaging: AFAS biedt geen native 3CX-koppeling. Oplossing: REST API-wrapper gebouwd in Node.js die klantdata real-time ophaalt en de 3CX IVR stuurt op basis van contracttype. Resultaat: 40% minder buiten-uren tickets door slimme routering.",
     imageUrl:
       "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&auto=format&fit=crop&q=60",
     tags: ["3CX", "VoIP", "AFAS"],
@@ -36,6 +39,8 @@ const defaultProjects: Project[] = [
     title: "AI Chat Applicatie",
     description:
       "Real-time chatapplicatie aangedreven door kunstmatige intelligentie voor slimme reacties en automatisering.",
+    detail:
+      "Gebouwd met Python (FastAPI) + Claude API als LLM. Supabase als vector-database voor context-retrieval (RAG). Gebruikers kunnen documenten uploaden die het model als kennisbron gebruikt. Inclusief streaming responses en sessiebeheer.",
     imageUrl:
       "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&auto=format&fit=crop&q=60",
     tags: ["Python", "AI", "Supabase"],
@@ -47,6 +52,8 @@ const defaultProjects: Project[] = [
     title: "Portfolio Website",
     description:
       "Een responsieve portfoliowebsite die projecten en professionele ervaring presenteert.",
+    detail:
+      "Gebouwd met React 18 + TypeScript + Tailwind CSS. Scroll-driven hero-animatie op basis van 51 WebP-frames (cinematic effect). Framer Motion voor alle sectie-animaties. Volledig donker thema, mobile-first en gedeployed via Vercel.",
     imageUrl:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60",
     tags: ["React", "TypeScript", "Tailwind"],
@@ -134,6 +141,7 @@ const ProjectsGrid = ({
               <ProjectCard
                 title={project.title}
                 description={project.description}
+                detail={project.detail}
                 imageUrl={project.imageUrl}
                 tags={project.tags}
                 githubUrl={project.githubUrl}

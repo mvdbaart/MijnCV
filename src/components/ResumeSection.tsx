@@ -65,8 +65,15 @@ const ResumeSection = () => {
         </motion.div>
 
         <div className="relative">
-          {/* vertical line */}
-          <div className="absolute left-5 top-0 h-full w-px bg-white/10 md:left-6" />
+          {/* vertical line — draws in from top as section enters view */}
+          <motion.div
+            className="absolute left-5 top-0 w-px origin-top bg-white/10 md:left-6"
+            style={{ height: "100%" }}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
 
           <div className="space-y-10">
             {timeline.map((entry, i) => (
