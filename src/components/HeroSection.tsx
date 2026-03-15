@@ -138,9 +138,10 @@ const HeroSection = ({
         </motion.div>
       </motion.div>
 
-      {/* ── RIGHT PANEL — GIF with parallax ───────────────── */}
+      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
       <div className="hidden overflow-hidden lg:block lg:w-1/2">
         <motion.img
+
           src="/output_optimized.gif"
           alt=""
           style={{ y: bgY, scale: bgScale }}
@@ -154,6 +155,7 @@ const HeroSection = ({
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
         </div>
       </div>
+
 
       {/* ── MOBILE — GIF strip ─────────────────────────────── */}
       <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
