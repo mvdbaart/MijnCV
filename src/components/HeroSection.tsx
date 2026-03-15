@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
@@ -21,6 +21,12 @@ const ROLES = [
   "AI Developer",
   "Probleemoplosser",
 ];
+
+// Scroll-driven background: 51 pre-exported WebP frames (frame_001 … frame_101, step 2)
+const FRAME_SRCS = Array.from({ length: 51 }, (_, i) => {
+  const n = (i * 2 + 1).toString().padStart(3, "0");
+  return `/frames_hero/frame_${n}.webp`;
+});
 
 function useTypewriter(words: string[]) {
   const [idx, setIdx] = useState(0);
@@ -56,7 +62,7 @@ function useTypewriter(words: string[]) {
   return chars;
 }
 
-const FRAMES = [
+const DECO_FRAMES = [
   { w: 280, h: 280, top: "10%",  left: "-8%",  rotate: 12,  duration: 22, color: "rgba(251,191,36,0.07)" },
   { w: 180, h: 180, top: "60%",  left: "5%",   rotate: -8,  duration: 18, color: "rgba(255,255,255,0.04)" },
   { w: 340, h: 340, top: "20%",  left: "55%",  rotate: 25,  duration: 28, color: "rgba(251,191,36,0.05)" },
@@ -71,16 +77,41 @@ const HeroSection = ({
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
+  // ── Scroll transforms (desktop parallax + content fade) ─────────────
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 800], [0, -120]);
   const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
 
-  // #1 — typewriter
+  // ── Scroll-driven frame index (mobile background) ────────────────────
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const [frameIdx, setFrameIdx] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setFrameIdx(
+      Math.min(
+        Math.round(v * (FRAME_SRCS.length - 1)),
+        FRAME_SRCS.length - 1,
+      ),
+    );
+  });
+
+  // Preload all frames so scroll feels instant
+  useEffect(() => {
+    FRAME_SRCS.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  // ── Typewriter ───────────────────────────────────────────────────────
   const role = useTypewriter(ROLES);
 
-  // #4 — cursor spotlight
+  // ── Cursor spotlight ─────────────────────────────────────────────────
   const panelRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: -9999, y: -9999 });
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -91,17 +122,34 @@ const HeroSection = ({
   const handleMouseLeave = () => setMouse({ x: -9999, y: -9999 });
 
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
+    <section
+      ref={sectionRef}
+      className="relative flex h-screen w-full overflow-hidden pt-16"
+    >
+      {/* ── MOBILE: scroll-driven frame background (hidden on lg+) ─────── */}
+      <div className="pointer-events-none absolute inset-0 z-0 lg:hidden">
+        <img
+          src={FRAME_SRCS[frameIdx]}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover object-center"
+        />
+        {/* dark overlay — keeps text readable */}
+        <div className="absolute inset-0 bg-gray-900/70" />
+        {/* bottom vignette to blend into next section */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-gray-900 to-transparent" />
+      </div>
+
       {/* ── LEFT PANEL ───────────────────────────────────── */}
       <motion.div
         ref={panelRef}
         style={{ opacity: contentOpacity, y: contentY }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900 px-8 lg:w-1/2"
+        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-transparent px-8 lg:w-1/2 lg:bg-gray-900"
       >
-        {/* ── rotating background frames ── */}
-        {FRAMES.map((f, i) => (
+        {/* decorative rotating border frames */}
+        {DECO_FRAMES.map((f, i) => (
           <motion.div
             key={i}
             className="pointer-events-none absolute rounded-sm border"
@@ -126,7 +174,7 @@ const HeroSection = ({
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
 
-        {/* #4 — cursor spotlight layer */}
+        {/* cursor spotlight layer */}
         <div
           className="pointer-events-none absolute inset-0 transition-opacity duration-300"
           style={{
@@ -150,7 +198,7 @@ const HeroSection = ({
             </AvatarFallback>
           </Avatar>
 
-          {/* #2 — availability badge */}
+          {/* availability badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -175,7 +223,7 @@ const HeroSection = ({
             {name}
           </motion.h1>
 
-          {/* #1 — typewriter title */}
+          {/* typewriter title */}
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -241,7 +289,6 @@ const HeroSection = ({
                 Contact
               </a>
             </Button>
-            {/* #3 — download CV */}
             <Button
               variant="outline"
               size="lg"
@@ -267,7 +314,7 @@ const HeroSection = ({
         </motion.div>
       </motion.div>
 
-      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
+      {/* ── RIGHT PANEL — GIF with parallax (desktop only) ─────────────── */}
       <div className="hidden overflow-hidden lg:block lg:w-1/2">
         <motion.img
           src="/output_optimized.gif"
@@ -279,20 +326,8 @@ const HeroSection = ({
         {/* left-edge fade into dark panel */}
         <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-900 to-transparent" />
-          {/* bottom fade */}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
         </div>
-      </div>
-
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
-        <img
-          src="/output_optimized.gif"
-          alt=""
-          className="h-full w-full object-cover object-top opacity-30"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
       </div>
     </section>
   );
