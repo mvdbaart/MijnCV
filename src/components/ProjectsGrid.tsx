@@ -53,7 +53,7 @@ const defaultProjects: Project[] = [
     description:
       "Een responsieve portfoliowebsite die projecten en professionele ervaring presenteert.",
     detail:
-      "Gebouwd met React 18 + TypeScript + Tailwind CSS. Scroll-driven hero-animatie op basis van 51 WebP-frames (cinematic effect). Framer Motion voor alle sectie-animaties. Volledig donker thema, mobile-first en gedeployed via Vercel.",
+      "Gebouwd met React 18 + TypeScript + Tailwind CSS. Hero-sectie met geoptimaliseerde GIF-visual en subtiele scroll-parallax. Framer Motion voor alle sectie-animaties. Volledig donker thema, mobile-first en gedeployed via Vercel.",
     imageUrl:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60",
     tags: ["React", "TypeScript", "Tailwind"],
