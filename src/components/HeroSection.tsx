@@ -62,6 +62,14 @@ function useTypewriter(words: string[]) {
   return chars;
 }
 
+const DECO_FRAMES = [
+  { w: 280, h: 280, top: "10%",  left: "-8%",  rotate: 12,  duration: 22, color: "rgba(251,191,36,0.07)" },
+  { w: 180, h: 180, top: "60%",  left: "5%",   rotate: -8,  duration: 18, color: "rgba(255,255,255,0.04)" },
+  { w: 340, h: 340, top: "20%",  left: "55%",  rotate: 25,  duration: 28, color: "rgba(251,191,36,0.05)" },
+  { w: 120, h: 120, top: "75%",  left: "70%",  rotate: -15, duration: 15, color: "rgba(255,255,255,0.06)" },
+  { w: 220, h: 220, top: "-5%",  left: "35%",  rotate: 5,   duration: 32, color: "rgba(251,191,36,0.04)" },
+];
+
 const HeroSection = ({
   name = "Maarten van den Baart",
   summary = "Gepassioneerd probleemoplosser op de servicedesk, creatieve en innovatieve oplossingen voor procesverbetering, AI enthousiasteling. VoIP engineer met 3CX specialisme. AI programmeur.",
@@ -147,6 +155,20 @@ const HeroSection = ({
         onMouseLeave={handleMouseLeave}
         className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900/70 px-8 lg:w-1/2 lg:bg-gray-900"
       >
+        {/* decorative rotating border frames */}
+        {DECO_FRAMES.map((f, i) => (
+          <motion.div
+            key={i}
+            className="pointer-events-none absolute rounded-sm border"
+            style={{ width: f.w, height: f.h, top: f.top, left: f.left, borderColor: f.color }}
+            animate={{ rotate: [f.rotate, f.rotate + 360], y: [0, -18, 0] }}
+            transition={{
+              rotate: { duration: f.duration, repeat: Infinity, ease: "linear" },
+              y: { duration: f.duration / 3, repeat: Infinity, ease: "easeInOut" },
+            }}
+          />
+        ))}
+
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
 
@@ -166,7 +188,7 @@ const HeroSection = ({
         >
           <Avatar className="mx-auto mb-6 h-36 w-36 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900">
             <AvatarImage
-              src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
+              src="/output_optimized.gif"
               className="object-cover"
             />
             <AvatarFallback className="bg-gray-700 text-2xl text-white">
