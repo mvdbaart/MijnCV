@@ -84,13 +84,25 @@ const HeroSection = ({
 
   return (
     <section className="relative flex h-screen w-full overflow-hidden pt-16">
+      {/* ── MOBILE BACKGROUND — full-bleed sequence ───────── */}
+      <div className="absolute inset-0 z-0 overflow-hidden lg:hidden">
+        <img
+          src="/output_optimized.gif"
+          alt=""
+          className="h-full w-full object-cover object-center"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-gray-900/90" />
+      </div>
+
       {/* ── LEFT PANEL ───────────────────────────────────── */}
       <motion.div
         ref={panelRef}
         style={{ opacity: contentOpacity, y: contentY }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900 px-8 lg:w-1/2"
+        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-transparent px-8 lg:w-1/2 lg:bg-gray-900"
       >
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
@@ -253,16 +265,6 @@ const HeroSection = ({
         </div>
       </div>
 
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
-        <img
-          src="/output_optimized.gif"
-          alt=""
-          className="h-full w-full object-cover object-top opacity-30"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
-      </div>
     </section>
   );
 };
