@@ -50,12 +50,13 @@ const HeroSection = ({
   return (
     // Outer wrapper: 200vh gives scroll range while the section stays pinned
     <div className="relative h-[200vh]">
-      <section className="sticky top-0 flex h-screen w-full flex-row overflow-hidden pt-16">
+      {/* overflow-hidden must NOT be on the sticky element itself — put it on children */}
+      <section className="sticky top-0 flex h-screen w-full flex-row pt-16">
 
         {/* ── LEFT PANEL — profile content (slides away on scroll) ── */}
         <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
-          className="relative z-10 flex w-1/2 flex-none items-center bg-gray-900 px-4 md:px-8"
+          className="relative z-10 flex w-1/2 flex-none items-center overflow-hidden bg-gray-900 px-4 md:px-8"
         >
           {/* subtle grid overlay */}
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
@@ -161,7 +162,7 @@ const HeroSection = ({
         </motion.div>
 
         {/* ── RIGHT PANEL — scroll-driven frames (stays fixed) ──── */}
-        <div className="relative w-1/2 flex-none overflow-hidden">
+        <div className="relative w-1/2 flex-none overflow-clip">
           <img
             src={FRAMES[frameIndex]}
             alt=""
