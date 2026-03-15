@@ -1,10 +1,12 @@
 import React from "react";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
+import StatsRow from "./StatsRow";
 import SkillsSection from "./SkillsSection";
 import ProjectsGrid from "./ProjectsGrid";
 import ResumeSection from "./ResumeSection";
 import ContactSection from "./ContactSection";
+import CursorSpotlight from "./CursorSpotlight";
 
 interface HomeProps {
   name?: string;
@@ -35,6 +37,7 @@ const Home = ({
 }: HomeProps) => {
   return (
     <div className="min-h-screen bg-gray-900">
+      <CursorSpotlight />
       <Navbar />
       <main>
         <div id="hero">
@@ -48,15 +51,23 @@ const Home = ({
           />
         </div>
 
-        <SkillsSection />
+        <StatsRow />
 
-        <ResumeSection />
+        <div id="skills">
+          <SkillsSection />
+        </div>
+
+        <div id="resume">
+          <ResumeSection />
+        </div>
 
         <div id="projects">
           <ProjectsGrid projects={projects} />
         </div>
 
-        <ContactSection />
+        <div id="contact">
+          <ContactSection />
+        </div>
       </main>
     </div>
   );

@@ -1,9 +1,31 @@
-import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+} from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const TOTAL_FRAMES = 51;
+const FRAMES = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
+  const n = String(i * 2 + 1).padStart(3, "0");
+  return `/frames_hero/frame_${n}.webp`;
+});
+
+const VH = typeof window !== "undefined" ? window.innerHeight : 800;
+
+const ROLES = [
+  "ICT Professional",
+  "VoIP Engineer",
+  "AI Developer",
+  "Servicedesk Expert",
+  "Procesverbeteraar",
+];
 
 interface HeroSectionProps {
   name?: string;
@@ -23,151 +45,199 @@ const HeroSection = ({
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 800], [0, -120]);
-  const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
-  const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const contentY = useTransform(scrollY, [0, 400], [0, -40]);
+  const contentOpacity = useTransform(scrollY, [0, VH * 0.6], [1, 0]);
+  const contentY = useTransform(scrollY, [0, VH * 0.6], [0, -60]);
+  const [frameIndex, setFrameIndex] = useState(0);
+  const [roleIndex, setRoleIndex] = useState(0);
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const progress = Math.min(1, Math.max(0, y / VH));
+    setFrameIndex(Math.round(progress * (TOTAL_FRAMES - 1)));
+  });
+
+  useEffect(() => {
+    FRAMES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  // Cycle through roles every 2.5s
+  useEffect(() => {
+    const id = setInterval(
+      () => setRoleIndex((i) => (i + 1) % ROLES.length),
+      2500,
+    );
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
-      {/* ── LEFT PANEL — profile content ───────────────────── */}
-      <motion.div
-        style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex w-full items-center justify-center bg-gray-900 px-8 lg:w-1/2"
-      >
-        {/* subtle grid overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
+    // Outer wrapper: 200vh gives scroll range while the section stays pinned
+    <div className="relative h-[200vh]">
+      {/* overflow-hidden must NOT be on the sticky element itself — put it on children */}
+      <section className="sticky top-0 flex h-screen w-full flex-row pt-16">
 
+        {/* ── LEFT PANEL — profile content (slides away on scroll) ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative z-10 max-w-lg text-center"
+          style={{ opacity: contentOpacity, y: contentY }}
+          className="relative z-10 flex w-1/2 flex-none items-center overflow-hidden bg-gray-900 px-4 md:px-8"
         >
-          <Avatar className="mx-auto mb-6 h-36 w-36 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900">
-            <AvatarImage
-              src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
-              className="object-cover"
-            />
-            <AvatarFallback className="bg-gray-700 text-2xl text-white">
-              MB
-            </AvatarFallback>
-          </Avatar>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="mb-2 text-4xl font-bold tracking-tight text-white md:text-5xl"
-          >
-            {name}
-          </motion.h1>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mb-5 text-lg font-medium tracking-widest text-amber-400/80 uppercase"
-          >
-            {title}
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mb-8 text-base leading-relaxed text-gray-400 md:text-lg"
-          >
-            {summary}
-          </motion.p>
+          {/* subtle grid overlay */}
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="flex flex-wrap justify-center gap-3"
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="relative z-10 w-full text-left"
           >
-            <Button
-              variant="outline"
-              size="lg"
-              className={cn(
-                "gap-2 border-white/20 bg-transparent text-white",
-                "hover:border-white/40 hover:bg-white/10 hover:text-white",
-              )}
-              asChild
+            {/* ── Beschikbaarheidsbadge ── */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-400/10 px-3 py-1 text-xs text-green-400"
             >
-              <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                <Github className="h-4 w-4" />
-                GitHub
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className={cn(
-                "gap-2 border-white/20 bg-transparent text-white",
-                "hover:border-white/40 hover:bg-white/10 hover:text-white",
-              )}
-              asChild
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400" />
+              Beschikbaar voor nieuwe uitdagingen
+            </motion.div>
+
+            <Avatar className="mb-4 h-20 w-20 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900 md:mb-6 md:h-36 md:w-36">
+              <AvatarImage
+                src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-gray-700 text-2xl text-white">
+                MB
+              </AvatarFallback>
+            </Avatar>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="mb-2 text-2xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl"
             >
-              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
-              </a>
-            </Button>
-            <Button
-              size="lg"
-              className="gap-2 bg-amber-500 text-gray-900 hover:bg-amber-400"
-              asChild
+              {name}
+            </motion.h1>
+
+            {/* ── Typewriter role ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="mb-4 h-7 overflow-hidden md:mb-5 md:h-8"
             >
-              <a href={email}>
-                <Mail className="h-4 w-4" />
-                Contact
-              </a>
-            </Button>
+              <AnimatePresence mode="wait">
+                <motion.h2
+                  key={roleIndex}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="text-xs font-medium tracking-widest text-amber-400/80 uppercase md:text-lg"
+                >
+                  {ROLES[roleIndex]}
+                </motion.h2>
+              </AnimatePresence>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="mb-6 hidden text-sm leading-relaxed text-gray-400 md:mb-8 md:block md:text-base lg:text-lg"
+            >
+              {summary}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="flex flex-wrap gap-2 md:gap-3"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1.5 border-white/20 bg-transparent text-white",
+                  "hover:border-white/40 hover:bg-white/10 hover:text-white",
+                )}
+                asChild
+              >
+                <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">GitHub</span>
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1.5 border-white/20 bg-transparent text-white",
+                  "hover:border-white/40 hover:bg-white/10 hover:text-white",
+                )}
+                asChild
+              >
+                <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">LinkedIn</span>
+                </a>
+              </Button>
+              <Button
+                size="sm"
+                className="gap-1.5 bg-amber-500 text-gray-900 hover:bg-amber-400"
+                asChild
+              >
+                <a href={email}>
+                  <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">Contact</span>
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1.5 border-amber-400/40 bg-amber-400/10 text-amber-300",
+                  "hover:border-amber-400/60 hover:bg-amber-400/20 hover:text-amber-200",
+                )}
+                asChild
+              >
+                <a href="/cv-maarten-van-den-baart.pdf" download>
+                  <Download className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">Download CV</span>
+                </a>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* bouncing scroll arrow */}
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          >
+            <ArrowDown className="h-6 w-6 text-gray-600" />
           </motion.div>
         </motion.div>
 
-        {/* bouncing scroll arrow */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <ArrowDown className="h-6 w-6 text-gray-600" />
-        </motion.div>
-      </motion.div>
-
-      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
-      <div className="hidden overflow-hidden lg:block lg:w-1/2">
-        <motion.img
-
-          src="/output_optimized.gif"
-          alt=""
-          style={{ y: bgY, scale: bgScale }}
-          className="h-full w-full object-cover object-center"
-          aria-hidden="true"
-        />
-        {/* left-edge fade into dark panel */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-900 to-transparent" />
+        {/* ── RIGHT PANEL — scroll-driven frames (stays fixed) ──── */}
+        <div className="relative w-1/2 flex-none overflow-clip">
+          <img
+            src={FRAMES[frameIndex]}
+            alt=""
+            className="h-full w-full object-cover object-center"
+            aria-hidden="true"
+          />
+          {/* left-edge fade into dark panel */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-gray-900 to-transparent md:w-32" />
           {/* bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
         </div>
-      </div>
 
-
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
-        <img
-          src="/output_optimized.gif"
-          alt=""
-          className="h-full w-full object-cover object-top opacity-30"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
