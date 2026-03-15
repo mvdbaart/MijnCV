@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -23,17 +23,17 @@ const Navbar = ({
 }: NavbarProps) => {
   const [activeSection, setActiveSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
-  // Scroll background detection
+  // #5 — scroll progress bar
+  const { scrollYProgress } = useScroll();
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // IntersectionObserver — highlights active nav item while scrolling
+  // #6 — IntersectionObserver for active section
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -43,10 +43,10 @@ const Navbar = ({
           }
         });
       },
-      { threshold: 0.4 },
+      { rootMargin: "-50% 0px -50% 0px" },
     );
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id);
+    sections.forEach((section) => {
+      const el = document.getElementById(section.id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
@@ -68,11 +68,20 @@ const Navbar = ({
           : "border-transparent bg-gray-900/80 backdrop-blur-sm",
       )}
     >
+      {/* #5 — scroll progress bar */}
+      <motion.div
+        style={{ scaleX: scrollYProgress }}
+        className="absolute bottom-0 left-0 h-0.5 w-full origin-left bg-amber-400"
+      />
+
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <a
           href="#"
-          onClick={(e) => { e.preventDefault(); scrollToSection("hero"); }}
+          onClick={(e) => {
+            e.preventDefault();
+            scrollToSection("hero");
+          }}
           className="font-mono text-lg font-bold tracking-tight text-white"
         >
           MvdB<span className="text-amber-400">.</span>
@@ -86,7 +95,7 @@ const Navbar = ({
               variant="ghost"
               size="sm"
               className={cn(
-                "text-sm font-medium transition-colors",
+                "relative text-sm font-medium transition-colors",
                 activeSection === section.id
                   ? "text-white"
                   : "text-gray-400 hover:text-white",
@@ -94,6 +103,13 @@ const Navbar = ({
               onClick={() => scrollToSection(section.id)}
             >
               {section.label}
+              {/* active indicator dot */}
+              {activeSection === section.id && (
+                <motion.span
+                  layoutId="nav-dot"
+                  className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-amber-400"
+                />
+              )}
             </Button>
           ))}
         </div>
@@ -102,7 +118,11 @@ const Navbar = ({
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-300 hover:text-white"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -131,12 +151,6 @@ const Navbar = ({
           </Sheet>
         </div>
       </div>
-
-      {/* Scroll progress bar */}
-      <motion.div
-        className="absolute bottom-0 left-0 h-[2px] bg-amber-400/70"
-        style={{ width: progressWidth }}
-      />
     </nav>
   );
 };

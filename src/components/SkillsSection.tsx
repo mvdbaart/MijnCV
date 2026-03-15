@@ -1,12 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-interface Skill {
+// #8 — proficiency dot indicators (1–5)
+interface SkillItem {
   name: string;
   level: number; // 1–5
 }
 
-const skills: { category: string; items: Skill[] }[] = [
+interface SkillGroup {
+  category: string;
+  items: SkillItem[];
+}
+
+const skills: SkillGroup[] = [
   {
     category: "Frontend",
     items: [
@@ -22,8 +29,8 @@ const skills: { category: string; items: Skill[] }[] = [
     items: [
       { name: "Node.js", level: 3 },
       { name: "Python", level: 4 },
-      { name: "Supabase", level: 4 },
-      { name: "REST APIs", level: 5 },
+      { name: "Supabase", level: 3 },
+      { name: "REST APIs", level: 4 },
       { name: "SQL", level: 3 },
     ],
   },
@@ -49,23 +56,21 @@ const columnVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-const tagVariants = {
-  hidden: { opacity: 0, scale: 0.88 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-};
-
-const SkillDots = ({ level }: { level: number }) => (
-  <span className="ml-2 inline-flex items-center gap-0.5">
-    {Array.from({ length: 5 }, (_, i) => (
-      <span
-        key={i}
-        className={`inline-block h-1.5 w-1.5 rounded-full ${
-          i < level ? "bg-amber-400" : "bg-white/15"
-        }`}
-      />
-    ))}
-  </span>
-);
+function ProficiencyDots({ level }: { level: number }) {
+  return (
+    <span className="flex gap-1">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={cn(
+            "h-1.5 w-1.5 rounded-full transition-colors",
+            i < level ? "bg-amber-400" : "bg-white/15",
+          )}
+        />
+      ))}
+    </span>
+  );
+}
 
 const SkillsSection = () => {
   return (
@@ -99,22 +104,19 @@ const SkillsSection = () => {
               <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-gray-500">
                 {group.category}
               </p>
-              <motion.div
-                variants={containerVariants}
-                className="flex flex-col gap-2"
-              >
+              <div className="space-y-3">
                 {group.items.map((skill) => (
-                  <motion.span
+                  <motion.div
                     key={skill.name}
-                    variants={tagVariants}
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-200 transition-colors hover:border-amber-400/40 hover:bg-amber-400/10 hover:text-amber-300"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.03] px-4 py-2.5 hover:border-amber-400/20 hover:bg-amber-400/5"
                   >
-                    <span>{skill.name}</span>
-                    <SkillDots level={skill.level} />
-                  </motion.span>
+                    <span className="text-sm text-gray-200">{skill.name}</span>
+                    <ProficiencyDots level={skill.level} />
+                  </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
