@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import Navbar from "./Navbar";
+import CodeRain from "./CodeRain";
 import HeroSection from "./HeroSection";
 import StatsRow from "./StatsRow";
 import SkillsSection from "./SkillsSection";
@@ -75,7 +76,10 @@ const Home = ({
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Fixed mobile background — stays in place while content scrolls over it */}
-      <div className="pointer-events-none fixed inset-0 -z-10 lg:hidden">
+      <div
+        className="pointer-events-none fixed inset-0 lg:hidden"
+        style={{ zIndex: -20 }}
+      >
         <img
           src={currentFrame}
           alt=""
@@ -83,6 +87,14 @@ const Home = ({
           className="h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gray-900/50" />
+      </div>
+
+      {/* Code rain — full screen, behind all content, above frame background */}
+      <div
+        className="pointer-events-none fixed inset-0"
+        style={{ zIndex: -10 }}
+      >
+        <CodeRain />
       </div>
 
       <Navbar />
