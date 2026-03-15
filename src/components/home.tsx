@@ -54,7 +54,7 @@ const Home = ({
   ],
 }: HomeProps) => {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       <main className="relative">
         <div id="hero" className="relative">
