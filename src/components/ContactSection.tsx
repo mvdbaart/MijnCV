@@ -25,7 +25,7 @@ const links = [
 
 const ContactSection = () => {
   return (
-    <section id="contact" className="bg-gray-900 px-6 py-24 md:px-12">
+    <section id="contact" className="bg-gray-900/80 px-6 py-24 md:px-12">
       <div className="mx-auto max-w-xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

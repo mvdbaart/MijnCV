@@ -77,7 +77,7 @@ const Home = ({
     <div className="min-h-screen bg-gray-900">
       {/* Fixed mobile background — stays in place while content scrolls over it */}
       <div
-        className="pointer-events-none fixed inset-0 lg:hidden"
+        className="pointer-events-none fixed inset-0"
         style={{ zIndex: -20 }}
       >
         <img

@@ -48,7 +48,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
 
 const StatsRow = () => {
   return (
-    <section className="bg-gray-950/80 px-6 py-14 lg:bg-gray-950">
+    <section className="bg-gray-950/80 px-6 py-14">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
