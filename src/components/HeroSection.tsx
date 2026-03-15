@@ -1,9 +1,15 @@
-import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const TOTAL_FRAMES = 51;
+const FRAMES = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
+  const n = String(i * 2 + 1).padStart(3, "0");
+  return `/frames_hero/frame_${n}.webp`;
+});
 
 interface HeroSectionProps {
   name?: string;
@@ -23,17 +29,28 @@ const HeroSection = ({
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 800], [0, -120]);
-  const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
+  const [frameIndex, setFrameIndex] = useState(0);
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const progress = Math.min(1, Math.max(0, y / 600));
+    setFrameIndex(Math.round(progress * (TOTAL_FRAMES - 1)));
+  });
+
+  useEffect(() => {
+    FRAMES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   return (
     <section className="relative flex h-screen w-full flex-col overflow-hidden pt-16 lg:flex-row">
-      {/* ── MOBILE — GIF strip (boven content) ─────────────── */}
+      {/* ── MOBILE — frame strip (boven content) ────────────── */}
       <div className="relative h-44 w-full flex-shrink-0 overflow-hidden lg:hidden">
         <img
-          src="/output_optimized.gif"
+          src={FRAMES[frameIndex]}
           alt=""
           className="h-full w-full object-cover object-center"
           aria-hidden="true"
@@ -149,13 +166,11 @@ const HeroSection = ({
         </motion.div>
       </motion.div>
 
-      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
+      {/* ── RIGHT PANEL — scroll-driven frames ─────────────── */}
       <div className="hidden overflow-hidden lg:block lg:w-1/2">
-        <motion.img
-
-          src="/output_optimized.gif"
+        <img
+          src={FRAMES[frameIndex]}
           alt=""
-          style={{ y: bgY, scale: bgScale }}
           className="h-full w-full object-cover object-center"
           aria-hidden="true"
         />
@@ -166,9 +181,6 @@ const HeroSection = ({
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
         </div>
       </div>
-
-
-
     </section>
   );
 };
