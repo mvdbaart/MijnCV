@@ -1,7 +1,10 @@
 import React from "react";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
+import SkillsSection from "./SkillsSection";
 import ProjectsGrid from "./ProjectsGrid";
+import ResumeSection from "./ResumeSection";
+import ContactSection from "./ContactSection";
 
 interface HomeProps {
   name?: string;
@@ -28,36 +31,13 @@ const Home = ({
   githubUrl = "https://github.com/mvdbaart",
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",
-  projects = [
-    {
-      id: 1,
-      title: "3CX callflow met Afas integratie",
-      description:
-        "Callflow met een api integratie met Afas om specifieke klanten toegang te geven tot ondersteuning buiten kantooruren",
-      imageUrl:
-        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&auto=format&fit=crop&q=60",
-      tags: ["React", "Node.js", "MongoDB"],
-      githubUrl: "#",
-      liveUrl: "#",
-    },
-    {
-      id: 2,
-      title: "AI Chat Application",
-      description:
-        "Real-time chat application powered by artificial intelligence.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&auto=format&fit=crop&q=60",
-      tags: ["Python", "TensorFlow", "WebSocket"],
-      githubUrl: "#",
-      liveUrl: "#",
-    },
-  ],
+  projects,
 }: HomeProps) => {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
-      <main className="relative">
-        <div id="hero" className="relative">
+      <main>
+        <div id="hero">
           <HeroSection
             name={name}
             title={title}
@@ -68,31 +48,15 @@ const Home = ({
           />
         </div>
 
+        <SkillsSection />
+
+        <ResumeSection />
+
         <div id="projects">
           <ProjectsGrid projects={projects} />
         </div>
 
-        <div
-          id="resume"
-          className="min-h-screen bg-gray-50 dark:bg-gray-800 p-8"
-        >
-          <div className="container mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Resume Section Coming Soon
-            </h2>
-          </div>
-        </div>
-
-        <div
-          id="contact"
-          className="min-h-screen bg-white dark:bg-gray-900 p-8"
-        >
-          <div className="container mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Contact Section Coming Soon
-            </h2>
-          </div>
-        </div>
+        <ContactSection />
       </main>
     </div>
   );
