@@ -54,7 +54,7 @@ const ResumeSection = () => {
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="resume" className="bg-gray-950 px-6 py-24 md:px-12">
+    <section id="resume" className="bg-gray-950/80 px-6 py-24 md:px-12 lg:bg-gray-950">
       <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

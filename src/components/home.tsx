@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useScroll, useMotionValueEvent } from "framer-motion";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import StatsRow from "./StatsRow";
@@ -6,6 +7,11 @@ import SkillsSection from "./SkillsSection";
 import ProjectsGrid from "./ProjectsGrid";
 import ResumeSection from "./ResumeSection";
 import ContactSection from "./ContactSection";
+
+const FRAME_SRCS = Array.from({ length: 51 }, (_, i) => {
+  const n = (i * 2 + 1).toString().padStart(3, "0");
+  return `/frames_hero/frame_${n}.webp`;
+});
 
 interface HomeProps {
   name?: string;
@@ -34,8 +40,51 @@ const Home = ({
   email = "mailto:maarten@vandenbaart.nl",
   projects,
 }: HomeProps) => {
+  const [frameIdx, setFrameIdx] = useState(0);
+  const [hasPreloadError, setHasPreloadError] = useState(false);
+
+  // Preload all frames on mount
+  useEffect(() => {
+    let mounted = true;
+    Promise.all(
+      FRAME_SRCS.map(
+        (src) =>
+          new Promise<void>((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => resolve();
+            img.onerror = () => reject();
+          }),
+      ),
+    ).catch(() => {
+      if (mounted) setHasPreloadError(true);
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  // Map scrollY 0 → heroHeight to frameIdx 0 → 50, freeze after
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const heroH = window.innerHeight;
+    const progress = Math.min(y / heroH, 1);
+    setFrameIdx(Math.round(progress * (FRAME_SRCS.length - 1)));
+  });
+
+  const currentFrame = hasPreloadError ? FRAME_SRCS[0] : FRAME_SRCS[frameIdx];
+
   return (
     <div className="min-h-screen bg-gray-900">
+      {/* Fixed mobile background — stays in place while content scrolls over it */}
+      <div className="pointer-events-none fixed inset-0 -z-10 lg:hidden">
+        <img
+          src={currentFrame}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gray-900/50" />
+      </div>
+
       <Navbar />
       <main>
         <div id="hero">
