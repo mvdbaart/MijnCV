@@ -6,7 +6,6 @@ import SkillsSection from "./SkillsSection";
 import ProjectsGrid from "./ProjectsGrid";
 import ResumeSection from "./ResumeSection";
 import ContactSection from "./ContactSection";
-import CursorSpotlight from "./CursorSpotlight";
 
 interface HomeProps {
   name?: string;
@@ -37,7 +36,6 @@ const Home = ({
 }: HomeProps) => {
   return (
     <div className="min-h-screen bg-gray-900">
-      <CursorSpotlight />
       <Navbar />
       <main>
         <div id="hero">
@@ -53,22 +51,34 @@ const Home = ({
 
         <StatsRow />
 
-        <div id="skills">
-          <SkillsSection />
-        </div>
+        <SkillsSection />
 
-        <div id="resume">
-          <ResumeSection />
-        </div>
+        <ResumeSection />
 
         <div id="projects">
           <ProjectsGrid projects={projects} />
         </div>
 
-        <div id="contact">
-          <ContactSection />
-        </div>
+        <ContactSection />
       </main>
+
+      <footer className="border-t border-white/[0.06] bg-gray-950 px-6 py-5 text-center">
+        <p className="font-mono text-xs text-gray-600">
+          Last updated:{" "}
+          <span className="text-gray-500">
+            {new Date(__BUILD_DATE__).toLocaleString("nl-NL", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+          <span className="mx-2 text-gray-700">·</span>
+          build{" "}
+          <span className="text-amber-400/50">{__GIT_HASH__}</span>
+        </p>
+      </footer>
     </div>
   );
 };
