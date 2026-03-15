@@ -29,11 +29,22 @@ const HeroSection = ({
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
 
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
+    <section className="relative flex h-screen w-full flex-col overflow-hidden pt-16 lg:flex-row">
+      {/* ── MOBILE — GIF strip (boven content) ─────────────── */}
+      <div className="relative h-44 w-full flex-shrink-0 overflow-hidden lg:hidden">
+        <img
+          src="/output_optimized.gif"
+          alt=""
+          className="h-full w-full object-cover object-center"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900" />
+      </div>
+
       {/* ── LEFT PANEL — profile content ───────────────────── */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex w-full items-center justify-center bg-gray-900 px-8 lg:w-1/2"
+        className="relative z-10 flex flex-1 items-center justify-center bg-gray-900 px-8 lg:w-1/2 lg:flex-none"
       >
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
@@ -157,16 +168,7 @@ const HeroSection = ({
       </div>
 
 
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
-        <img
-          src="/output_optimized.gif"
-          alt=""
-          className="h-full w-full object-cover object-top opacity-30"
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
-      </div>
+
     </section>
   );
 };
