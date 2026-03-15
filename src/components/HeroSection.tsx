@@ -22,6 +22,11 @@ const ROLES = [
   "Probleemoplosser",
 ];
 
+const HERO_FRAME_SOURCES = Array.from(
+  { length: 101 },
+  (_, index) => `/frames_hero/frame_${String(index + 1).padStart(3, "0")}.webp`,
+);
+
 function useTypewriter(words: string[]) {
   const [idx, setIdx] = useState(0);
   const [chars, setChars] = useState("");
@@ -63,11 +68,57 @@ const HeroSection = ({
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
+  const sectionRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
   const bgY = useTransform(scrollY, [0, 800], [0, -120]);
   const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
+
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  const [hasFramePreloadError, setHasFramePreloadError] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.all(
+      HERO_FRAME_SOURCES.map(
+        (frameSrc) =>
+          new Promise<void>((resolve, reject) => {
+            const frameImage = new Image();
+            frameImage.src = frameSrc;
+            frameImage.onload = () => resolve();
+            frameImage.onerror = () =>
+              reject(new Error(`Could not preload frame: ${frameSrc}`));
+          }),
+      ),
+    ).catch(() => {
+      if (isMounted) {
+        setHasFramePreloadError(true);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    return scrollYProgress.on("change", (value) => {
+      const clampedProgress = Math.min(1, Math.max(0, value));
+      const maxFrameIndex = HERO_FRAME_SOURCES.length - 1;
+      const nextFrameIndex = Math.round(clampedProgress * maxFrameIndex);
+      setCurrentFrameIndex(nextFrameIndex);
+    });
+  }, [scrollYProgress]);
+
+  const currentFrameSrc = hasFramePreloadError
+    ? HERO_FRAME_SOURCES[0]
+    : HERO_FRAME_SOURCES[currentFrameIndex];
 
   // #1 — typewriter
   const role = useTypewriter(ROLES);
@@ -83,7 +134,10 @@ const HeroSection = ({
   const handleMouseLeave = () => setMouse({ x: -9999, y: -9999 });
 
   return (
-    <section className="relative flex h-screen w-full overflow-hidden pt-16">
+    <section
+      ref={sectionRef}
+      className="relative flex h-screen w-full overflow-hidden pt-16"
+    >
       {/* ── LEFT PANEL ───────────────────────────────────── */}
       <motion.div
         ref={panelRef}
@@ -236,10 +290,10 @@ const HeroSection = ({
         </motion.div>
       </motion.div>
 
-      {/* ── RIGHT PANEL — WebP with parallax ──────────────── */}
+      {/* ── RIGHT PANEL — scroll-driven frame sequence ─────── */}
       <div className="hidden overflow-hidden lg:block lg:w-1/2">
         <motion.img
-          src="/output_optimized.gif"
+          src={currentFrameSrc}
           alt=""
           style={{ y: bgY, scale: bgScale }}
           className="h-full w-full object-cover object-center"
@@ -253,10 +307,10 @@ const HeroSection = ({
         </div>
       </div>
 
-      {/* ── MOBILE — GIF strip ─────────────────────────────── */}
+      {/* ── MOBILE — frame strip ───────────────────────────── */}
       <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
         <img
-          src="/output_optimized.gif"
+          src={currentFrameSrc}
           alt=""
           className="h-full w-full object-cover object-top opacity-30"
           aria-hidden="true"
