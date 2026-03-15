@@ -190,7 +190,7 @@ const HeroSection = ({
         >
           <Avatar className="mx-auto mb-6 h-36 w-36 ring-2 ring-white/10 ring-offset-2 ring-offset-gray-900">
             <AvatarImage
-              src="https://media.licdn.com/dms/image/v2/D4E03AQFrHSYbIJFGuQ/profile-displayphoto-shrink_800_800/B4EZSY05rGGwAg-/0/1737730793009?e=1744243200&v=beta&t=rCwpHLiTK0iElRgP02Plfx4ix6_OnCbdaROIBiJv7hA"
+              src="/output_optimized.gif"
               className="object-cover"
             />
             <AvatarFallback className="bg-gray-700 text-2xl text-white">
