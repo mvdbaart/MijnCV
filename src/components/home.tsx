@@ -61,6 +61,24 @@ const Home = ({
 
         <ContactSection />
       </main>
+
+      <footer className="border-t border-white/[0.06] bg-gray-950 px-6 py-5 text-center">
+        <p className="font-mono text-xs text-gray-600">
+          Last updated:{" "}
+          <span className="text-gray-500">
+            {new Date(__BUILD_DATE__).toLocaleString("nl-NL", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+          <span className="mx-2 text-gray-700">·</span>
+          build{" "}
+          <span className="text-amber-400/50">{__GIT_HASH__}</span>
+        </p>
+      </footer>
     </div>
   );
 };
