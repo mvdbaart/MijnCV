@@ -23,8 +23,9 @@ const ROLES = [
 ];
 
 const HERO_FRAME_SOURCES = Array.from(
-  { length: 101 },
-  (_, index) => `/frames_hero/frame_${String(index + 1).padStart(3, "0")}.webp`,
+  { length: 51 },
+  (_, index) =>
+    `/frames_hero/frame_${String(index * 2 + 1).padStart(3, "0")}.webp`,
 );
 
 function useTypewriter(words: string[]) {
@@ -144,7 +145,7 @@ const HeroSection = ({
         style={{ opacity: contentOpacity, y: contentY }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900 px-8 lg:w-1/2"
+        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-gray-900/70 px-8 lg:w-1/2 lg:bg-gray-900"
       >
         {/* subtle grid overlay */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:14px_24px]" />
@@ -308,14 +309,15 @@ const HeroSection = ({
       </div>
 
       {/* ── MOBILE — frame strip ───────────────────────────── */}
-      <div className="absolute inset-x-0 top-16 h-48 overflow-hidden lg:hidden">
+      <div className="absolute inset-0 overflow-hidden lg:hidden">
         <img
           src={currentFrameSrc}
           alt=""
-          className="h-full w-full object-cover object-top opacity-30"
+          className="h-full w-full object-cover object-center opacity-45"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
+        <div className="absolute inset-0 bg-gray-900/35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/40 via-gray-900/25 to-gray-900" />
       </div>
     </section>
   );
