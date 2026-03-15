@@ -22,11 +22,6 @@ const ROLES = [
   "Probleemoplosser",
 ];
 
-const HERO_FRAME_SOURCES = Array.from(
-  { length: 51 },
-  (_, index) =>
-    `/frames_hero/frame_${String(index * 2 + 1).padStart(3, "0")}.webp`,
-);
 
 function useTypewriter(words: string[]) {
   const [idx, setIdx] = useState(0);
@@ -77,57 +72,9 @@ const HeroSection = ({
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",
 }: HeroSectionProps) => {
-  const sectionRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const bgY = useTransform(scrollY, [0, 800], [0, -120]);
-  const bgScale = useTransform(scrollY, [0, 800], [1.1, 1.0]);
   const contentOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const contentY = useTransform(scrollY, [0, 400], [0, -40]);
-
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
-  const [hasFramePreloadError, setHasFramePreloadError] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    Promise.all(
-      HERO_FRAME_SOURCES.map(
-        (frameSrc) =>
-          new Promise<void>((resolve, reject) => {
-            const frameImage = new Image();
-            frameImage.src = frameSrc;
-            frameImage.onload = () => resolve();
-            frameImage.onerror = () =>
-              reject(new Error(`Could not preload frame: ${frameSrc}`));
-          }),
-      ),
-    ).catch(() => {
-      if (isMounted) {
-        setHasFramePreloadError(true);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    return scrollYProgress.on("change", (value) => {
-      const clampedProgress = Math.min(1, Math.max(0, value));
-      const maxFrameIndex = HERO_FRAME_SOURCES.length - 1;
-      const nextFrameIndex = Math.round(clampedProgress * maxFrameIndex);
-      setCurrentFrameIndex(nextFrameIndex);
-    });
-  }, [scrollYProgress]);
-
-  const currentFrameSrc = hasFramePreloadError
-    ? HERO_FRAME_SOURCES[0]
-    : HERO_FRAME_SOURCES[currentFrameIndex];
 
   // #1 — typewriter
   const role = useTypewriter(ROLES);
@@ -144,7 +91,6 @@ const HeroSection = ({
 
   return (
     <section
-      ref={sectionRef}
       className="relative flex h-screen w-full overflow-hidden pt-16"
     >
       {/* ── LEFT PANEL ───────────────────────────────────── */}
@@ -153,7 +99,7 @@ const HeroSection = ({
         style={{ opacity: contentOpacity, y: contentY }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-transparent px-8 lg:w-1/2 lg:bg-gray-900"
+        className="relative z-10 flex w-full items-center justify-center overflow-hidden bg-transparent px-8"
       >
         {/* decorative rotating border frames */}
         {DECO_FRAMES.map((f, i) => (
@@ -312,23 +258,6 @@ const HeroSection = ({
           <ArrowDown className="h-6 w-6 text-gray-600" />
         </motion.div>
       </motion.div>
-
-      {/* ── RIGHT PANEL — scroll-driven frame sequence ─────── */}
-      <div className="hidden overflow-hidden lg:block lg:w-1/2">
-        <motion.img
-          src={currentFrameSrc}
-          alt=""
-          style={{ y: bgY, scale: bgScale }}
-          className="h-full w-full object-cover object-center"
-          aria-hidden="true"
-        />
-        {/* left-edge fade into dark panel */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-900 to-transparent" />
-          {/* bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-900/60 to-transparent" />
-        </div>
-      </div>
 
     </section>
   );
