@@ -1,45 +1,86 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { Briefcase, GraduationCap, Award } from "lucide-react";
 
 interface TimelineEntry {
   period: string;
   role: string;
   company: string;
   description: string;
-  type: "work" | "education";
+  type: "work" | "education" | "certification";
 }
 
 const timeline: TimelineEntry[] = [
   {
-    period: "2021 – heden",
-    role: "ICT Professional / Servicedesk",
-    company: "Vul bedrijfsnaam in",
-    description:
-      "Eerstelijns en tweedelijns support, procesverbetering via AI-automatisering, VoIP-beheer met 3CX en AFAS-integraties.",
-    type: "work",
-  },
-  {
-    period: "2019 – 2021",
+    period: "jan. 2023 – heden",
     role: "VoIP Engineer",
-    company: "Vul bedrijfsnaam in",
+    company: "QNP ICT & Telecom professionals",
     description:
-      "Implementatie en beheer van 3CX telefonieoplossingen. Callflow-ontwikkeling met API-koppelingen naar externe systemen.",
+      "Complexe telefonie inrichtingen met API-koppelingen naar externe systemen. Callflow-ontwikkeling en VoIP-beheer met 3CX.",
     type: "work",
   },
   {
-    period: "2017 – 2019",
-    role: "Medewerker IT Support",
-    company: "Vul bedrijfsnaam in",
+    period: "apr. 2017 – jan. 2023",
+    role: "Service Desk Manager",
+    company: "QNP ICT & Telecom professionals",
     description:
-      "Gebruikersondersteuning, hardware/software installaties en netwerkbeheer.",
+      "Verantwoordelijk voor klanttevredenheid en procesoptimalisatie. Coaching van teamleden, VoIP-beheer en IT-infrastructuurbeheer.",
     type: "work",
   },
   {
-    period: "2015 – 2017",
-    role: "MBO ICT — Beheer",
-    company: "Vul school in",
-    description: "Opleiding ICT-beheer met focus op netwerken en systemen.",
+    period: "mei 2009 – mrt. 2012",
+    role: "HP Senior Product Specialist",
+    company: "Sitel Group",
+    description:
+      "Sturing van de andere Product Specialisten. Escalatiebeheer en analytisch rapporteren over KPI's.",
+    type: "work",
+  },
+  {
+    period: "jan. 2009 – mei 2009",
+    role: "HP Laserjet Teammanager",
+    company: "Sitel Group",
+    description:
+      "Leiding geven aan een team van 30 man sterk. Verantwoordelijk voor teamperformance en klanttevredenheid.",
+    type: "work",
+  },
+  {
+    period: "mei 2008 – mrt. 2009",
+    role: "HP Product Specialist Laserjet",
+    company: "Sitel Group",
+    description:
+      "Technische productondersteuning voor HP LaserJet printers. KPI-rapportage en kwaliteitsbeheer.",
+    type: "work",
+  },
+  {
+    period: "mrt. 2006 – mrt. 2008",
+    role: "Customer Support Professional HP Color Laserjet",
+    company: "Sitel Group",
+    description:
+      "Telefonische ondersteuning van zakelijke klanten voor HP Color LaserJet producten.",
+    type: "work",
+  },
+  {
+    period: "jan. 2019",
+    role: "Advanced Certified Engineer (ACE)",
+    company: "3CX",
+    description:
+      "Officiële 3CX certificering voor geavanceerde VoIP-configuraties en -implementaties. Referentienummer: fwUbmRVnP0.",
+    type: "certification",
+  },
+  {
+    period: "2004 – 2006",
+    role: "HBO, Communication & Multimedia Design",
+    company: "Avans Hogeschool",
+    description:
+      "Informatie-architectuur, filosofie en communicatiedesign.",
+    type: "education",
+  },
+  {
+    period: "2002 – 2004",
+    role: "HBO, Mens & Informatica",
+    company: "Fontys Hogeschool",
+    description:
+      "Database beheer en User Interface Design.",
     type: "education",
   },
 ];
@@ -95,6 +136,8 @@ const ResumeSection = () => {
                 <div className="absolute left-3 top-1 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-gray-950 md:left-[14px]">
                   {entry.type === "work" ? (
                     <Briefcase className="h-2.5 w-2.5 text-amber-400" />
+                  ) : entry.type === "certification" ? (
+                    <Award className="h-2.5 w-2.5 text-amber-400" />
                   ) : (
                     <GraduationCap className="h-2.5 w-2.5 text-blue-400" />
                   )}
