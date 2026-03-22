@@ -35,7 +35,7 @@ interface HomeProps {
 const Home = ({
   name = "Maarten van den Baart",
   title = "ICT Professional",
-  summary = "Gepassioneerd probleemoplosser op de servicedesk, creatieve en innovatieve oplossingen voor procesverbetering, AI enthousiasteling. VoIP engineer met 3CX specialisme. AI programmeur.",
+  summary = "Technisch onderlegde en klantgerichte specialist met meer dan 15 jaar ervaring in technische klantenservice, VoIP, en netwerkinfrastructuren. Sterk in analytisch denken en procesoptimalisatie. VoIP engineer met 3CX specialisme en AI-passie.",
   githubUrl = "https://github.com/mvdbaart",
   linkedinUrl = "https://www.linkedin.com/in/mvdbaart/",
   email = "mailto:maarten@vandenbaart.nl",

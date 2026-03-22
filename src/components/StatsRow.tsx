@@ -9,7 +9,7 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { value: 8, suffix: "+", label: "Jaar ervaring" },
+  { value: 19, suffix: "+", label: "Jaar ervaring" },
   { value: 10, suffix: "+", label: "Projecten afgerond" },
   { value: 3, label: "Kernspecialismen" },
   { value: 100, suffix: "%", label: "Klanttevredenheid" },
